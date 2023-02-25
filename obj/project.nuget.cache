@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "dgSpecHash": "mj6fQIFLKIrydovFkX1+6mf94JoRJB+zid08zngWn4Ai9755rFT8hRux8YpfiymneYbfZrdp+HJCb8VpoZa0oA==",
+  "success": true,
+  "projectFilePath": "/home/joseph/code/chaotic-attractors/chaotic-attractors.csproj",
+  "expectedPackageFiles": [
+    "/home/joseph/.nuget/packages/aspose.3d/23.2.0/aspose.3d.23.2.0.nupkg.sha512",
+    "/home/joseph/.nuget/packages/microsoft.netcore.platforms/5.0.0/microsoft.netcore.platforms.5.0.0.nupkg.sha512",
+    "/home/joseph/.nuget/packages/microsoft.win32.systemevents/5.0.0/microsoft.win32.systemevents.5.0.0.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk/4.7.7/opentk.4.7.7.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk.compute/4.7.7/opentk.compute.4.7.7.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk.core/4.7.7/opentk.core.4.7.7.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk.graphics/4.7.7/opentk.graphics.4.7.7.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk.input/4.7.7/opentk.input.4.7.7.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk.mathematics/4.7.7/opentk.mathematics.4.7.7.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk.openal/4.7.7/opentk.openal.4.7.7.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk.redist.glfw/3.3.8.30/opentk.redist.glfw.3.3.8.30.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk.windowing.common/4.7.7/opentk.windowing.common.4.7.7.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk.windowing.desktop/4.7.7/opentk.windowing.desktop.4.7.7.nupkg.sha512",
+    "/home/joseph/.nuget/packages/opentk.windowing.graphicslibraryframework/4.7.7/opentk.windowing.graphicslibraryframework.4.7.7.nupkg.sha512",
+    "/home/joseph/.nuget/packages/stbimagesharp/2.27.13/stbimagesharp.2.27.13.nupkg.sha512",
+    "/home/joseph/.nuget/packages/system.drawing.common/5.0.0/system.drawing.common.5.0.0.nupkg.sha512",
+    "/home/joseph/.nuget/packages/system.runtime.compilerservices.unsafe/5.0.0/system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
