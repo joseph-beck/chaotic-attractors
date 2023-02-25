@@ -12,30 +12,59 @@ namespace chaotic_attractors.Source.Render
     {
         private readonly float[] _vertices =
         {
-            // position         texture coordinates
-             0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
-             0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f  // top left
+             // Position          Normal
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // Front face
+             0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, // Back face
+             0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, // Left face
+            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, // Right face
+             0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, // Bottom face
+             0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, // Top face
+             0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
         };
 
-        private readonly uint[] _indices =
-        {
-            0, 1, 3,
-            1, 2, 3
-        };
-
-        private int _elementBufferObject;
+        private readonly Vector3 _lightPos = new Vector3(1.2f, 1.0f, 2.0f);
         private int _vertexBufferObject;
-        private int _vertexArrayObject;
-        private Shader _shader;
-        private Texture _texture;
-        private Texture _texture2;
-
+        private int _vaoModel;
+        private int _vaoLamp;
+        private Shader _lampShader;
+        private Shader _lightingShader;
         private Camera _camera;
         private bool _firstMove = true;
         private Vector2 _lastPos;
-        private double _time;
 
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -50,36 +79,34 @@ namespace chaotic_attractors.Source.Render
 
             GL.Enable(EnableCap.DepthTest);
 
-            _vertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_vertexArrayObject);
-
             _vertexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
 
-            _elementBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObject);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
+            _lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
+            _lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
 
-            _shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
-            _shader.Use();
+            {
+                _vaoModel = GL.GenVertexArray();
+                GL.BindVertexArray(_vaoModel);
 
-            var vertexLocation = _shader.GetAttribLocation("aPosition");
-            GL.EnableVertexAttribArray(vertexLocation);
-            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+                var positionLocation = _lightingShader.GetAttribLocation("aPos");
+                GL.EnableVertexAttribArray(positionLocation);
+                GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
 
-            var texCoordLocation = _shader.GetAttribLocation("aTexCoord");
-            GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+                var normalLocation = _lightingShader.GetAttribLocation("aNormal");
+                GL.EnableVertexAttribArray(normalLocation);
+                GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+            }
 
-            _texture = Texture.LoadFromFile("Resources/container.png");
-            _texture.Use(TextureUnit.Texture0);
+            {
+                _vaoLamp = GL.GenVertexArray();
+                GL.BindVertexArray(_vaoLamp);
 
-            _texture2 = Texture.LoadFromFile("Resources/awesomeface.png");
-            _texture2.Use(TextureUnit.Texture1);
-
-            _shader.SetInt("texture0", 0);
-            _shader.SetInt("texture1", 1);
+                var positionLocation = _lampShader.GetAttribLocation("aPos");
+                GL.EnableVertexAttribArray(positionLocation);
+                GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
+            }
 
             _camera = new Camera(Vector3.UnitZ * 3, Size.X / (float)Size.Y);
 
@@ -90,22 +117,35 @@ namespace chaotic_attractors.Source.Render
         {
             base.OnRenderFrame(e);
 
-            _time += 4.0 * e.Time;
-
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            GL.BindVertexArray(_vertexArrayObject);
+            GL.BindVertexArray(_vaoModel);
 
-            _texture.Use(TextureUnit.Texture0);
-            _texture2.Use(TextureUnit.Texture1);
-            _shader.Use();
+            _lightingShader.Use();
 
-            var model = Matrix4.Identity * Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(_time));
-            _shader.SetMatrix4("model", model);
-            _shader.SetMatrix4("view", _camera.GetViewMatrix());
-            _shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+            _lightingShader.SetMatrix4("model", Matrix4.Identity);
+            _lightingShader.SetMatrix4("view", _camera.GetViewMatrix());
+            _lightingShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
 
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
+            _lightingShader.SetVector3("objectColor", new Vector3(1.0f, 0.5f, 0.31f));
+            _lightingShader.SetVector3("lightColor", new Vector3(1.0f, 1.0f, 1.0f));
+            _lightingShader.SetVector3("lightPos", _lightPos);
+            _lightingShader.SetVector3("viewPos", _camera.Position);
+
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+
+            GL.BindVertexArray(_vaoLamp);
+
+            _lampShader.Use();
+
+            Matrix4 lampMatrix = Matrix4.CreateScale(0.2f);
+            lampMatrix = lampMatrix * Matrix4.CreateTranslation(_lightPos);
+
+            _lampShader.SetMatrix4("model", lampMatrix);
+            _lampShader.SetMatrix4("view", _camera.GetViewMatrix());
+            _lampShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
 
             SwapBuffers();
         }
@@ -133,7 +173,6 @@ namespace chaotic_attractors.Source.Render
             {
                 _camera.Position += _camera.Front * cameraSpeed * (float)e.Time; // Forward
             }
-
             if (input.IsKeyDown(Keys.S))
             {
                 _camera.Position -= _camera.Front * cameraSpeed * (float)e.Time; // Backwards
@@ -167,7 +206,7 @@ namespace chaotic_attractors.Source.Render
                 var deltaX = mouse.X - _lastPos.X;
                 var deltaY = mouse.Y - _lastPos.Y;
                 _lastPos = new Vector2(mouse.X, mouse.Y);
-                
+
                 _camera.Yaw += deltaX * sensitivity;
                 _camera.Pitch -= deltaY * sensitivity;
             }
@@ -187,20 +226,6 @@ namespace chaotic_attractors.Source.Render
             GL.Viewport(0, 0, Size.X, Size.Y);
             
             _camera.AspectRatio = Size.X / (float)Size.Y;
-        }
-
-        protected override void OnUnload()
-        {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindVertexArray(0);
-            GL.UseProgram(0);
-
-            GL.DeleteBuffer(_vertexBufferObject);
-            GL.DeleteVertexArray(_vertexArrayObject);
-
-            GL.DeleteProgram(_shader.Handle);
-
-            base.OnUnload();
         }
     }
 }
