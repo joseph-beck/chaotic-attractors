@@ -30,6 +30,7 @@ namespace chaotic_attractors.Source.Render
         protected override void OnLoad()
         {
             base.OnLoad();
+            VSync = VSyncMode.On;
 
             float[] vertices = _cube.GetVertices(); 
 
